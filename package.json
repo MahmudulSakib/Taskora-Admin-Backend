@@ -37,16 +37,11 @@
     "@types/passport-local": "^1.0.38",
     "@types/pg": "^8.15.4",
     "@types/uuid": "^10.0.0",
-    "@types/streamifier": "^0.1.2"
-  },
-  "devDependencies": {
+    "@types/streamifier": "^0.1.2",
     "drizzle-kit": "^0.31.4",
-    "nodemon": "^3.1.10",
     "ts-node": "^10.9.2",
     "tsx": "^4.20.3",
-    "typescript": "^5.8.3"
-  },
-  "keywords": [],
-  "author": "",
-  "license": "ISC"
+    "typescript": "^5.8.3",
+    "nodemon": "^3.1.10"
+  }
 }
