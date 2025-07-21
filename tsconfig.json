@@ -12,6 +12,6 @@
     "resolveJsonModule": true,
     "types": ["node"]
   },
-  "include": ["**/*.ts"],
+  "include": ["server.ts", "admin", "db", "drizzle", "security"],
   "exclude": ["node_modules", "dist"]
 }
