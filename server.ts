@@ -22,7 +22,10 @@ import adminCarousel from "./admin/admincarousel";
 const app = express();
 const port = process.env.PORT || 8080;
 
-const allowedOrigins = ["http://localhost:3000", "http://localhost:3001"];
+const allowedOrigins = [
+  "https://taskora-admin-ui.vercel.app",
+  "http://taskora-main-ui.vercel.app",
+];
 
 app.use(express.json());
 app.use(cookieParser());

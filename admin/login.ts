@@ -31,7 +31,7 @@ adminLogin.post("/admin/log-in", (req, res, next) => {
 
       res.cookie("admintoken", token, {
         httpOnly: true,
-        secure: false,
+        secure: true,
         sameSite: "strict",
         maxAge: 6 * 60 * 60 * 1000,
       });
