@@ -32,7 +32,8 @@ adminLogin.post("/admin/log-in", (req, res, next) => {
       res.cookie("admintoken", token, {
         httpOnly: true,
         secure: true,
-        sameSite: "strict",
+        sameSite: "none",
+        domain: ".vercel.app",
         maxAge: 6 * 60 * 60 * 1000,
       });
 

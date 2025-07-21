@@ -18,6 +18,7 @@ import adminNotifications from "./admin/adminnotification";
 import adminUserRanks from "./admin/adminuserranks";
 import adminVendorShipRequests from "./admin/adminvendor";
 import adminCarousel from "./admin/admincarousel";
+import adminMe from "./admin/adminme";
 
 const app = express();
 const port = process.env.PORT || 8080;
@@ -43,6 +44,7 @@ app.use(
   })
 );
 app.use("/", adminLogin);
+app.use("/", adminMe);
 app.use("/", adminLogout);
 app.use("/", adminProtected);
 app.use("/", adminAddmoney);
