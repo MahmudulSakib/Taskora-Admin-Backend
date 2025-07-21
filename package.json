@@ -1,23 +1,8 @@
 {
-  "devDependencies": {
-    "@types/bcrypt": "^6.0.0",
-    "@types/cookie-parser": "^1.4.9",
-    "@types/cors": "^2.8.19",
-    "@types/express": "^5.0.3",
-    "@types/jsonwebtoken": "^9.0.10",
-    "@types/multer": "^2.0.0",
-    "@types/node": "^24.0.15",
-    "@types/passport": "^1.0.17",
-    "@types/passport-jwt": "^4.0.1",
-    "@types/passport-local": "^1.0.38",
-    "@types/pg": "^8.15.4",
-    "@types/uuid": "^10.0.0",
-    "drizzle-kit": "^0.31.4",
-    "nodemon": "^3.1.10",
-    "ts-node": "^10.9.2",
-    "tsx": "^4.20.3",
-    "typescript": "^5.8.3"
-  },
+  "name": "admin-server",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
   "type": "commonjs",
   "scripts": {
     "build": "tsc",
@@ -25,7 +10,6 @@
     "dev": "nodemon server.ts"
   },
   "dependencies": {
-    "@types/streamifier": "^0.1.2",
     "bcrypt": "^6.0.0",
     "cloudinary": "^2.7.0",
     "cookie-parser": "^1.4.7",
@@ -40,12 +24,28 @@
     "passport-local": "^1.0.0",
     "pg": "^8.16.3",
     "streamifier": "^0.1.1",
-    "uuid": "^11.1.0"
+    "uuid": "^11.1.0",
+    "@types/bcrypt": "^6.0.0",
+    "@types/cookie-parser": "^1.4.9",
+    "@types/cors": "^2.8.19",
+    "@types/express": "^5.0.3",
+    "@types/jsonwebtoken": "^9.0.10",
+    "@types/multer": "^2.0.0",
+    "@types/node": "^24.0.15",
+    "@types/passport": "^1.0.17",
+    "@types/passport-jwt": "^4.0.1",
+    "@types/passport-local": "^1.0.38",
+    "@types/pg": "^8.15.4",
+    "@types/uuid": "^10.0.0",
+    "@types/streamifier": "^0.1.2"
   },
-  "name": "admin-server",
-  "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
+  "devDependencies": {
+    "drizzle-kit": "^0.31.4",
+    "nodemon": "^3.1.10",
+    "ts-node": "^10.9.2",
+    "tsx": "^4.20.3",
+    "typescript": "^5.8.3"
+  },
   "keywords": [],
   "author": "",
   "license": "ISC"
