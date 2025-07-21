@@ -33,7 +33,6 @@ adminLogin.post("/admin/log-in", (req, res, next) => {
         httpOnly: true,
         secure: true,
         sameSite: "none",
-        domain: ".vercel.app",
         maxAge: 6 * 60 * 60 * 1000,
       });
 
