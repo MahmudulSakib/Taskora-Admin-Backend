@@ -7,105 +7,133 @@ import {
   usersTable,
 } from "../db/schema";
 import { eq, desc } from "drizzle-orm";
+import passport from "../security/passportconfig";
 
 const adminQuiz = express.Router();
 
-adminQuiz.post("/admin/post-quiz", async (req, res) => {
-  const { question, optionA, optionB, optionC, optionD, correctAnswer } =
-    req.body;
-  await db
-    .insert(quizzesTable)
-    .values({ question, optionA, optionB, optionC, optionD, correctAnswer });
-  res.json({ message: "Quiz created" });
-});
+adminQuiz.post(
+  "/admin/post-quiz",
+  passport.authenticate("jwt", { session: false }),
+  async (req, res) => {
+    const { question, optionA, optionB, optionC, optionD, correctAnswer } =
+      req.body;
+    await db
+      .insert(quizzesTable)
+      .values({ question, optionA, optionB, optionC, optionD, correctAnswer });
+    res.json({ message: "Quiz created" });
+  }
+);
 
-adminQuiz.get("/admin/submitted-answers", async (req, res) => {
-  const results = await db.select().from(quizSubmissionsTable);
-  res.json(results);
-});
+adminQuiz.get(
+  "/admin/submitted-answers",
+  passport.authenticate("jwt", { session: false }),
+  async (req, res) => {
+    const results = await db.select().from(quizSubmissionsTable);
+    res.json(results);
+  }
+);
 
-adminQuiz.post("/admin/approve-quiz", async (req: any, res: any) => {
-  const { submissionId, bonusAmount } = req.body;
+adminQuiz.post(
+  "/admin/approve-quiz",
+  passport.authenticate("jwt", { session: false }),
+  async (req: any, res: any) => {
+    const { submissionId, bonusAmount } = req.body;
 
-  const submission = await db
-    .select()
-    .from(quizSubmissionsTable)
-    .where(eq(quizSubmissionsTable.id, submissionId));
+    const submission = await db
+      .select()
+      .from(quizSubmissionsTable)
+      .where(eq(quizSubmissionsTable.id, submissionId));
 
-  if (!submission.length)
-    return res.status(404).json({ error: "Submission not found" });
+    if (!submission.length)
+      return res.status(404).json({ error: "Submission not found" });
 
-  const { userId } = submission[0];
-  await db.insert(userBonusWalletTable).values({ userId, amount: bonusAmount });
-  await db
-    .update(quizSubmissionsTable)
-    .set({ status: "approved", bonusAmount })
-    .where(eq(quizSubmissionsTable.id, submissionId));
+    const { userId } = submission[0];
+    await db
+      .insert(userBonusWalletTable)
+      .values({ userId, amount: bonusAmount });
+    await db
+      .update(quizSubmissionsTable)
+      .set({ status: "approved", bonusAmount })
+      .where(eq(quizSubmissionsTable.id, submissionId));
 
-  res.json({ message: "Approved and bonus sent" });
-});
+    res.json({ message: "Approved and bonus sent" });
+  }
+);
 
-adminQuiz.get("/admin/all-quizzes", async (req, res) => {
-  const page = parseInt(req.query.page as string) || 1;
-  const limit = parseInt(req.query.limit as string) || 50;
-  const offset = (page - 1) * limit;
+adminQuiz.get(
+  "/admin/all-quizzes",
+  passport.authenticate("jwt", { session: false }),
+  async (req, res) => {
+    const page = parseInt(req.query.page as string) || 1;
+    const limit = parseInt(req.query.limit as string) || 50;
+    const offset = (page - 1) * limit;
 
-  const total = await db.select().from(quizzesTable);
-  const quizzes = await db
-    .select()
-    .from(quizzesTable)
-    .orderBy(desc(quizzesTable.createdAt))
-    .limit(limit)
-    .offset(offset);
+    const total = await db.select().from(quizzesTable);
+    const quizzes = await db
+      .select()
+      .from(quizzesTable)
+      .orderBy(desc(quizzesTable.createdAt))
+      .limit(limit)
+      .offset(offset);
 
-  res.json({
-    data: quizzes,
-    total: total.length,
-    page,
-    totalPages: Math.ceil(total.length / limit),
-  });
-});
+    res.json({
+      data: quizzes,
+      total: total.length,
+      page,
+      totalPages: Math.ceil(total.length / limit),
+    });
+  }
+);
 
-adminQuiz.delete("/admin/delete-quiz/:id", async (req, res) => {
-  const { id } = req.params;
-  await db.delete(quizzesTable).where(eq(quizzesTable.id, id));
-  res.json({ message: "Deleted" });
-});
+adminQuiz.delete(
+  "/admin/delete-quiz/:id",
+  passport.authenticate("jwt", { session: false }),
+  async (req, res) => {
+    const { id } = req.params;
+    await db.delete(quizzesTable).where(eq(quizzesTable.id, id));
+    res.json({ message: "Deleted" });
+  }
+);
 
-adminQuiz.get("/admin/quiz-submissions", async (req, res) => {
-  const page = parseInt(req.query.page as string) || 1;
-  const limit = parseInt(req.query.limit as string) || 50;
-  const offset = (page - 1) * limit;
+adminQuiz.get(
+  "/admin/quiz-submissions",
+  passport.authenticate("jwt", { session: false }),
+  async (req, res) => {
+    const page = parseInt(req.query.page as string) || 1;
+    const limit = parseInt(req.query.limit as string) || 50;
+    const offset = (page - 1) * limit;
 
-  const all = await db.select().from(quizSubmissionsTable);
+    const all = await db.select().from(quizSubmissionsTable);
 
-  const paginated = await db
-    .select({
-      id: quizSubmissionsTable.id,
-      selectedAnswer: quizSubmissionsTable.selectedAnswer,
-      correctAnswer: quizzesTable.correctAnswer,
-      status: quizSubmissionsTable.status,
-      bonusAmount: quizSubmissionsTable.bonusAmount,
-      userName: usersTable.fullName,
-      userEmail: usersTable.email,
-      userMobileNo: usersTable.mobileNumber,
-      quizQuestion: quizzesTable.question,
-    })
-    .from(quizSubmissionsTable)
-    .leftJoin(usersTable, eq(quizSubmissionsTable.userId, usersTable.id))
-    .leftJoin(quizzesTable, eq(quizSubmissionsTable.quizId, quizzesTable.id))
-    .orderBy(desc(quizSubmissionsTable.createdAt))
-    .limit(limit)
-    .offset(offset);
+    const paginated = await db
+      .select({
+        id: quizSubmissionsTable.id,
+        selectedAnswer: quizSubmissionsTable.selectedAnswer,
+        correctAnswer: quizzesTable.correctAnswer,
+        status: quizSubmissionsTable.status,
+        bonusAmount: quizSubmissionsTable.bonusAmount,
+        userName: usersTable.fullName,
+        userEmail: usersTable.email,
+        userMobileNo: usersTable.mobileNumber,
+        quizQuestion: quizzesTable.question,
+      })
+      .from(quizSubmissionsTable)
+      .leftJoin(usersTable, eq(quizSubmissionsTable.userId, usersTable.id))
+      .leftJoin(quizzesTable, eq(quizSubmissionsTable.quizId, quizzesTable.id))
+      .orderBy(desc(quizSubmissionsTable.createdAt))
+      .limit(limit)
+      .offset(offset);
 
-  res.json({
-    data: paginated,
-    totalPages: Math.ceil(all.length / limit),
-  });
-});
+    res.json({
+      data: paginated,
+      totalPages: Math.ceil(all.length / limit),
+    });
+  }
+);
 
 adminQuiz.post(
   "/admin/quiz-submissions/:id/action",
+  passport.authenticate("jwt", { session: false }),
   async (req: any, res: any) => {
     const { id } = req.params;
     const { status, bonusAmount } = req.body;

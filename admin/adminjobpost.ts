@@ -5,45 +5,51 @@ import { jobPostRequestsTable, usersTable } from "../db/schema";
 import cloudinary from "../cloudinary";
 import streamifier from "streamifier";
 import multer from "multer";
+import passport from "../security/passportconfig";
 
 const storage = multer.memoryStorage();
 const upload = multer({ storage });
 
 const adminjobpost = express.Router();
-adminjobpost.get("/admin/job-posts", async (req, res) => {
-  try {
-    const posts = await db
-      .select({
-        id: jobPostRequestsTable.id,
-        title: jobPostRequestsTable.title,
-        link: jobPostRequestsTable.link,
-        limit: jobPostRequestsTable.limit,
-        costPerLimit: jobPostRequestsTable.costPerLimit,
-        totalCost: jobPostRequestsTable.totalCost,
-        imageUrl: jobPostRequestsTable.imageUrl,
-        description: jobPostRequestsTable.description,
-        status: jobPostRequestsTable.status,
-        createdAt: jobPostRequestsTable.createdAt,
-        updatedAt: jobPostRequestsTable.updatedAt,
-        user: {
-          id: usersTable.id,
-          fullName: usersTable.fullName,
-          email: usersTable.email,
-        },
-      })
-      .from(jobPostRequestsTable)
-      .orderBy(desc(jobPostRequestsTable.createdAt))
-      .leftJoin(usersTable, eq(jobPostRequestsTable.userId, usersTable.id));
+adminjobpost.get(
+  "/admin/job-posts",
+  passport.authenticate("jwt", { session: false }),
+  async (req, res) => {
+    try {
+      const posts = await db
+        .select({
+          id: jobPostRequestsTable.id,
+          title: jobPostRequestsTable.title,
+          link: jobPostRequestsTable.link,
+          limit: jobPostRequestsTable.limit,
+          costPerLimit: jobPostRequestsTable.costPerLimit,
+          totalCost: jobPostRequestsTable.totalCost,
+          imageUrl: jobPostRequestsTable.imageUrl,
+          description: jobPostRequestsTable.description,
+          status: jobPostRequestsTable.status,
+          createdAt: jobPostRequestsTable.createdAt,
+          updatedAt: jobPostRequestsTable.updatedAt,
+          user: {
+            id: usersTable.id,
+            fullName: usersTable.fullName,
+            email: usersTable.email,
+          },
+        })
+        .from(jobPostRequestsTable)
+        .orderBy(desc(jobPostRequestsTable.createdAt))
+        .leftJoin(usersTable, eq(jobPostRequestsTable.userId, usersTable.id));
 
-    res.json(posts);
-  } catch (err) {
-    console.error("Fetch admin job posts error:", err);
-    res.status(500).json({ error: "Failed to fetch job posts." });
+      res.json(posts);
+    } catch (err) {
+      console.error("Fetch admin job posts error:", err);
+      res.status(500).json({ error: "Failed to fetch job posts." });
+    }
   }
-});
+);
 
 adminjobpost.put(
   "/admin/job-posts/:id",
+  passport.authenticate("jwt", { session: false }),
   upload.single("image"),
   async (req: any, res: any) => {
     try {

@@ -3,11 +3,13 @@ import { rechargeTable } from "../db/schema";
 import { db } from "../db";
 import { usersTable } from "../db/schema";
 import { eq, desc } from "drizzle-orm";
+import passport from "../security/passportconfig";
 
 const adminGetRechargeRequests = express.Router();
 
 adminGetRechargeRequests.get(
   "/admin/mobile-recharge-requests",
+  passport.authenticate("jwt", { session: false }),
   async (req: any, res: any) => {
     try {
       const requests = await db
@@ -38,6 +40,7 @@ adminGetRechargeRequests.get(
 
 adminGetRechargeRequests.post(
   "/admin/update-mobile-recharge-status",
+  passport.authenticate("jwt", { session: false }),
   async (req: any, res: any) => {
     const { id, status } = req.body;
 

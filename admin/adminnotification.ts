@@ -22,19 +22,25 @@ adminNotifications.get(
   }
 );
 
-adminNotifications.post("/admin/notifications", async (req: any, res: any) => {
-  const { description } = req.body;
-  if (!description)
-    return res.status(400).json({ error: "Description is required" });
+adminNotifications.post(
+  "/admin/notifications",
+  passport.authenticate("jwt", { session: false }),
+  async (req: any, res: any) => {
+    const { description } = req.body;
+    if (!description)
+      return res.status(400).json({ error: "Description is required" });
 
-  try {
-    const result = await db.insert(notificationsTable).values({ description });
-    res.json({ message: "Notification posted" });
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ error: "Failed to post notification" });
+    try {
+      const result = await db
+        .insert(notificationsTable)
+        .values({ description });
+      res.json({ message: "Notification posted" });
+    } catch (err) {
+      console.error(err);
+      res.status(500).json({ error: "Failed to post notification" });
+    }
   }
-});
+);
 
 adminNotifications.delete(
   "/admin/notifications/:id",

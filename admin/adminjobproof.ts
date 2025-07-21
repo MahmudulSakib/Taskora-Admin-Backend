@@ -8,48 +8,54 @@ import {
 } from "../db/schema";
 import { eq, desc, sql } from "drizzle-orm";
 import { v4 as uuidv4 } from "uuid";
+import passport from "../security/passportconfig";
 
 const adminjobproof = express.Router();
 
-adminjobproof.get("/admin/job-proofs", async (req, res) => {
-  try {
-    const results = await db
-      .select({
-        id: jobProofsTable.id,
-        jobId: jobProofsTable.jobId,
-        userId: jobProofsTable.userId,
-        imageUrls: jobProofsTable.imageUrls,
-        status: jobProofsTable.status,
-        user: {
-          fullName: usersTable.fullName,
-          email: usersTable.email,
-          mobileNumber: usersTable.mobileNumber,
-        },
-        job: {
-          title: jobPostRequestsTable.title,
-          link: jobPostRequestsTable.link,
-          limit: jobPostRequestsTable.limit,
-          costPerLimit: jobPostRequestsTable.costPerLimit,
-          leftLimit: jobPostRequestsTable.leftLimit,
-        },
-      })
-      .from(jobProofsTable)
-      .leftJoin(usersTable, eq(usersTable.id, jobProofsTable.userId))
-      .leftJoin(
-        jobPostRequestsTable,
-        eq(jobPostRequestsTable.id, jobProofsTable.jobId)
-      )
-      .orderBy(desc(jobProofsTable.submittedAt));
+adminjobproof.get(
+  "/admin/job-proofs",
+  passport.authenticate("jwt", { session: false }),
+  async (req, res) => {
+    try {
+      const results = await db
+        .select({
+          id: jobProofsTable.id,
+          jobId: jobProofsTable.jobId,
+          userId: jobProofsTable.userId,
+          imageUrls: jobProofsTable.imageUrls,
+          status: jobProofsTable.status,
+          user: {
+            fullName: usersTable.fullName,
+            email: usersTable.email,
+            mobileNumber: usersTable.mobileNumber,
+          },
+          job: {
+            title: jobPostRequestsTable.title,
+            link: jobPostRequestsTable.link,
+            limit: jobPostRequestsTable.limit,
+            costPerLimit: jobPostRequestsTable.costPerLimit,
+            leftLimit: jobPostRequestsTable.leftLimit,
+          },
+        })
+        .from(jobProofsTable)
+        .leftJoin(usersTable, eq(usersTable.id, jobProofsTable.userId))
+        .leftJoin(
+          jobPostRequestsTable,
+          eq(jobPostRequestsTable.id, jobProofsTable.jobId)
+        )
+        .orderBy(desc(jobProofsTable.submittedAt));
 
-    res.json(results);
-  } catch (err) {
-    console.error("Error fetching job proofs:", err);
-    res.status(500).json({ error: "Failed to fetch job proofs." });
+      res.json(results);
+    } catch (err) {
+      console.error("Error fetching job proofs:", err);
+      res.status(500).json({ error: "Failed to fetch job proofs." });
+    }
   }
-});
+);
 
 adminjobproof.post(
   "/admin/job-proofs/:id/action",
+  passport.authenticate("jwt", { session: false }),
   async (req: any, res: any) => {
     const { status, bonusAmount } = req.body;
     const proofId = req.params.id;

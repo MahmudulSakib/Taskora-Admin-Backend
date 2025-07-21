@@ -7,12 +7,14 @@ import cloudinary from "../cloudinary";
 import streamifier from "streamifier";
 import { desc } from "drizzle-orm";
 import { eq } from "drizzle-orm";
+import passport from "../security/passportconfig";
 
 const upload = multer({ storage: multer.memoryStorage() });
 const adminCarousel = express.Router();
 
 adminCarousel.post(
   "/admin/carousel-upload",
+  passport.authenticate("jwt", { session: false }),
   upload.single("image"),
   async (req: any, res: any) => {
     try {
@@ -42,27 +44,37 @@ adminCarousel.post(
   }
 );
 
-adminCarousel.get("/admin/carousel-images", async (_, res) => {
-  try {
-    const images = await db
-      .select()
-      .from(carouselImagesTable)
-      .orderBy(desc(carouselImagesTable.createdAt));
-    res.json(images);
-  } catch (err) {
-    res.status(500).json({ error: "Failed to fetch images" });
+adminCarousel.get(
+  "/admin/carousel-images",
+  passport.authenticate("jwt", { session: false }),
+  async (_, res) => {
+    try {
+      const images = await db
+        .select()
+        .from(carouselImagesTable)
+        .orderBy(desc(carouselImagesTable.createdAt));
+      res.json(images);
+    } catch (err) {
+      res.status(500).json({ error: "Failed to fetch images" });
+    }
   }
-});
+);
 
-adminCarousel.delete("/admin/carousel-images/:id", async (req, res) => {
-  const id = req.params.id;
+adminCarousel.delete(
+  "/admin/carousel-images/:id",
+  passport.authenticate("jwt", { session: false }),
+  async (req, res) => {
+    const id = req.params.id;
 
-  try {
-    await db.delete(carouselImagesTable).where(eq(carouselImagesTable.id, id));
-    res.json({ success: true });
-  } catch (err) {
-    res.status(500).json({ error: "Failed to delete image" });
+    try {
+      await db
+        .delete(carouselImagesTable)
+        .where(eq(carouselImagesTable.id, id));
+      res.json({ success: true });
+    } catch (err) {
+      res.status(500).json({ error: "Failed to delete image" });
+    }
   }
-});
+);
 
 export default adminCarousel;

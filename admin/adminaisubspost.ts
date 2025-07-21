@@ -26,77 +26,93 @@ adminAiSubs.get(
   }
 );
 
-adminAiSubs.post("/admin/ai-subscriptions", async (req: any, res: any) => {
-  const { title, description, duration, price } = req.body;
+adminAiSubs.post(
+  "/admin/ai-subscriptions",
+  passport.authenticate("jwt", { session: false }),
+  async (req: any, res: any) => {
+    const { title, description, duration, price } = req.body;
 
-  if (!title || !description || !duration || !price) {
-    return res.status(400).json({ error: "All fields are required" });
+    if (!title || !description || !duration || !price) {
+      return res.status(400).json({ error: "All fields are required" });
+    }
+
+    try {
+      await db.insert(aiSubscriptionsTable).values({
+        title,
+        description,
+        duration: parseInt(duration),
+        price,
+      });
+
+      res.json({ message: "Plan created" });
+    } catch (err) {
+      res.status(500).json({ error: "Failed to create plan" });
+    }
   }
+);
 
-  try {
-    await db.insert(aiSubscriptionsTable).values({
-      title,
-      description,
-      duration: parseInt(duration),
-      price,
-    });
+adminAiSubs.delete(
+  "/admin/ai-subscriptions/:id",
+  passport.authenticate("jwt", { session: false }),
+  async (req, res) => {
+    const { id } = req.params;
 
-    res.json({ message: "Plan created" });
-  } catch (err) {
-    res.status(500).json({ error: "Failed to create plan" });
+    try {
+      await db
+        .delete(aiSubscriptionsTable)
+        .where(eq(aiSubscriptionsTable.id, id));
+
+      res.json({ message: "Plan deleted" });
+    } catch (err) {
+      res.status(500).json({ error: "Failed to delete plan" });
+    }
   }
-});
+);
 
-adminAiSubs.delete("/admin/ai-subscriptions/:id", async (req, res) => {
-  const { id } = req.params;
+adminAiSubs.get(
+  "/admin/ai-subscription-requests",
+  passport.authenticate("jwt", { session: false }),
+  async (req, res) => {
+    try {
+      const subscriptions = await db
+        .select({
+          id: userAiSubscriptionsTable.id,
+          status: userAiSubscriptionsTable.status,
+          subscribedAt: userAiSubscriptionsTable.subscribedAt,
+          email: userAiSubscriptionsTable.email,
+          mobileNumber: userAiSubscriptionsTable.mobileNumber,
+          user: {
+            id: usersTable.id,
+            fullName: usersTable.fullName,
+          },
+          plan: {
+            title: aiSubscriptionsTable.title,
+            price: aiSubscriptionsTable.price,
+            duration: aiSubscriptionsTable.duration,
+          },
+        })
+        .from(userAiSubscriptionsTable)
+        .leftJoin(
+          usersTable,
+          eq(userAiSubscriptionsTable.userId, usersTable.id)
+        )
+        .leftJoin(
+          aiSubscriptionsTable,
+          eq(userAiSubscriptionsTable.planId, aiSubscriptionsTable.id)
+        )
+        .orderBy(desc(userAiSubscriptionsTable.subscribedAt));
 
-  try {
-    await db
-      .delete(aiSubscriptionsTable)
-      .where(eq(aiSubscriptionsTable.id, id));
-
-    res.json({ message: "Plan deleted" });
-  } catch (err) {
-    res.status(500).json({ error: "Failed to delete plan" });
+      res.json(subscriptions);
+    } catch (err) {
+      console.error(err);
+      res.status(500).json({ error: "Failed to fetch subscriptions" });
+    }
   }
-});
-
-adminAiSubs.get("/admin/ai-subscription-requests", async (req, res) => {
-  try {
-    const subscriptions = await db
-      .select({
-        id: userAiSubscriptionsTable.id,
-        status: userAiSubscriptionsTable.status,
-        subscribedAt: userAiSubscriptionsTable.subscribedAt,
-        email: userAiSubscriptionsTable.email,
-        mobileNumber: userAiSubscriptionsTable.mobileNumber,
-        user: {
-          id: usersTable.id,
-          fullName: usersTable.fullName,
-        },
-        plan: {
-          title: aiSubscriptionsTable.title,
-          price: aiSubscriptionsTable.price,
-          duration: aiSubscriptionsTable.duration,
-        },
-      })
-      .from(userAiSubscriptionsTable)
-      .leftJoin(usersTable, eq(userAiSubscriptionsTable.userId, usersTable.id))
-      .leftJoin(
-        aiSubscriptionsTable,
-        eq(userAiSubscriptionsTable.planId, aiSubscriptionsTable.id)
-      )
-      .orderBy(desc(userAiSubscriptionsTable.subscribedAt));
-
-    res.json(subscriptions);
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ error: "Failed to fetch subscriptions" });
-  }
-});
+);
 
 adminAiSubs.patch(
   "/admin/ai-subscription-status/:id",
+  passport.authenticate("jwt", { session: false }),
   async (req: any, res: any) => {
     const { id } = req.params;
     const { status } = req.body;
