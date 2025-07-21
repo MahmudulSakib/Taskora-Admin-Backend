@@ -2,6 +2,7 @@
   "name": "admin-server",
   "version": "1.0.0",
   "type": "commonjs",
+  "main": "dist/server.js",
   "scripts": {
     "dev": "nodemon server.ts",
     "build": "tsc",
@@ -25,6 +26,11 @@
     "streamifier": "^0.1.1",
     "tsx": "^4.20.3",
     "uuid": "^11.1.0",
+    "nodemon": "^3.1.10",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.8.3"
+  },
+  "devDependencies": {
     "@types/bcrypt": "^6.0.0",
     "@types/cookie-parser": "^1.4.9",
     "@types/cors": "^2.8.19",
@@ -38,10 +44,5 @@
     "@types/pg": "^8.15.4",
     "@types/streamifier": "^0.1.2",
     "@types/uuid": "^10.0.0"
-  },
-  "devDependencies": {
-    "nodemon": "^3.1.10",
-    "ts-node": "^10.9.2",
-    "typescript": "^5.8.3"
   }
 }
