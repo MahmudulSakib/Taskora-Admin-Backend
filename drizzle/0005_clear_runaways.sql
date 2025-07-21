@@ -1,0 +1,1 @@
+ALTER TABLE "job_proofs" ADD COLUMN "status" varchar(20) DEFAULT 'pending';

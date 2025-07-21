@@ -1,0 +1,1 @@
+ALTER TABLE "job_post_requests" ADD COLUMN "left_limit" integer DEFAULT 0;
