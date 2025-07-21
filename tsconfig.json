@@ -1,17 +1,15 @@
 {
   "compilerOptions": {
-    "target": "ES2020",
-    "module": "CommonJS",
+    "target": "es2016",
+    "module": "commonjs",
     "outDir": "dist",
     "rootDir": ".",
-    "strict": true,
     "esModuleInterop": true,
-    "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true,
-    "moduleResolution": "node",
-    "resolveJsonModule": true,
+    "strict": true,
+    "skipLibCheck": true,
+    "noImplicitAny": false,
     "types": ["node"]
   },
-  "include": ["server.ts", "admin", "db", "drizzle", "security"],
-  "exclude": ["node_modules", "dist"]
+  "include": ["server.ts", "admin", "db", "drizzle", "security"]
 }
