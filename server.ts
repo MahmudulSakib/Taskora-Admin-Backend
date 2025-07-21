@@ -23,26 +23,20 @@ import adminMe from "./admin/adminme";
 const app = express();
 const port = process.env.PORT || 8080;
 
-const allowedOrigins = [
-  "https://taskora-admin-ui.vercel.app",
-  "https://taskora-main-ui.vercel.app",
-];
-
 app.use(express.json());
 app.use(cookieParser());
 app.use(passport.initialize());
+
 app.use(
   cors({
-    origin: (origin, callback) => {
-      if (!origin || allowedOrigins.includes(origin)) {
-        callback(null, true);
-      } else {
-        callback(new Error("Not allowed by CORS"));
-      }
-    },
+    origin: [
+      "https://taskora-admin-ui.vercel.app",
+      "https://taskora-main-ui.vercel.app",
+    ],
     credentials: true,
   })
 );
+
 app.use("/", adminLogin);
 app.use("/", adminMe);
 app.use("/", adminLogout);
