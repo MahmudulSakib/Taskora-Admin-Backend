@@ -2,14 +2,15 @@
   "compilerOptions": {
     "target": "es2016",
     "module": "commonjs",
-    "rootDir": ".",
     "outDir": "dist",
-    "strict": true,
+    "rootDir": ".",
     "esModuleInterop": true,
-    "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true,
+    "strict": true,
+    "skipLibCheck": true,
+    "noImplicitAny": false,
+    "typeRoots": ["./node_modules/@types"],
     "types": ["node"]
   },
-  "include": ["server.ts", "admin", "db", "security", "cloudinary.ts"],
-  "exclude": ["node_modules"]
+  "include": ["server.ts", "**/*.ts"]
 }
