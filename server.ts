@@ -24,7 +24,7 @@ const port = process.env.PORT || 8080;
 
 const allowedOrigins = [
   "https://taskora-admin-ui.vercel.app",
-  "http://taskora-main-ui.vercel.app",
+  "https://taskora-main-ui.vercel.app",
 ];
 
 app.use(express.json());
