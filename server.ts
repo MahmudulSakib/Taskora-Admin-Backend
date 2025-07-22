@@ -23,10 +23,6 @@ import adminMe from "./admin/adminme";
 const app = express();
 const port = process.env.PORT || 8080;
 
-app.use(express.json());
-app.use(cookieParser());
-app.use(passport.initialize());
-
 app.use(
   cors({
     origin: [
@@ -36,6 +32,10 @@ app.use(
     credentials: true,
   })
 );
+
+app.use(express.json());
+app.use(cookieParser());
+app.use(passport.initialize());
 
 app.use("/", adminLogin);
 app.use("/", adminMe);
