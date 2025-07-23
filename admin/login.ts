@@ -28,6 +28,8 @@ adminLogin.post("/admin/log-in", (req, res, next) => {
       const token = jwt.sign({ id: admin.id }, jwtSecret, {
         expiresIn: "6h",
       });
+      console.log("✅ Admin login successful, sending cookie.");
+      console.log("🔐 JWT Token:", token);
 
       res.cookie("admintoken", token, {
         httpOnly: true,
