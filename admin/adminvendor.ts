@@ -1,4 +1,3 @@
-// routes/adminVendorShipRequests.ts
 import express from "express";
 import { db } from "../db";
 import { vendorShipTable, usersTable } from "../db/schema";

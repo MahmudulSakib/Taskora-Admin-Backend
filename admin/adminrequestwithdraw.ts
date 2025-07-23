@@ -1,4 +1,3 @@
-// routes/admin/bonusWithdraw.ts
 import express from "express";
 import { db } from "../db";
 import { bonusWithdrawRequestsTable, usersTable } from "../db/schema";
