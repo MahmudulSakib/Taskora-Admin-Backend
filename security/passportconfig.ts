@@ -55,7 +55,7 @@ passport.use(
         if (!admin) return done(null, false);
         return done(null, admin);
       } catch (err) {
-        return done(err);
+        return done(err, false);
       }
     }
   )

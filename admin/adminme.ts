@@ -1,19 +1,34 @@
-import express from "express";
+// routes/admin/adminprofile.ts
+import express, { Request, Response } from "express";
 import passport from "../security/passportconfig";
+import { db } from "../db";
+import { adminsTable } from "../db/schema";
+import { eq } from "drizzle-orm";
 
-const adminMe = express.Router();
+const adminProfile = express.Router();
 
-adminMe.get(
-  "/admin/me",
-  (req, res, next) => {
-    console.log("🔍 Request cookies:", req.cookies);
-    next();
-  },
+adminProfile.get(
+  "/admin/profile",
   passport.authenticate("jwt", { session: false }),
-  (req, res) => {
-    console.log("✅ Authenticated admin:", req.user);
-    res.json({ admin: req.user });
+  async (req: any, res: Response) => {
+    try {
+      const adminId = req.user.id;
+
+      const result = await db
+        .select()
+        .from(adminsTable)
+        .where(eq(adminsTable.id, adminId));
+
+      const admin = result[0];
+
+      if (!admin) return res.status(404).json({ error: "Admin not found" });
+
+      res.json({ admin });
+    } catch (error) {
+      console.error("Admin profile error:", error);
+      res.status(500).json({ error: "Failed to fetch admin profile" });
+    }
   }
 );
 
-export default adminMe;
+export default adminProfile;

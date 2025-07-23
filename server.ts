@@ -18,7 +18,7 @@ import adminNotifications from "./admin/adminnotification";
 import adminUserRanks from "./admin/adminuserranks";
 import adminVendorShipRequests from "./admin/adminvendor";
 import adminCarousel from "./admin/admincarousel";
-import adminMe from "./admin/adminme";
+import adminProfile from "./admin/adminme";
 
 const app = express();
 const port = process.env.PORT || 8080;
@@ -38,7 +38,7 @@ app.use(cookieParser());
 app.use(passport.initialize());
 
 app.use("/", adminLogin);
-app.use("/", adminMe);
+app.use("/", adminProfile);
 app.use("/", adminLogout);
 app.use("/", adminProtected);
 app.use("/", adminAddmoney);
