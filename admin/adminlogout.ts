@@ -3,7 +3,7 @@ import passport from "../security/passportconfig";
 const adminLogout = express.Router();
 
 adminLogout.post("/admin/log-out", (req, res) => {
-  res.clearCookie("clienttoken", {
+  res.clearCookie("admintoken", {
     httpOnly: true,
     secure: true,
     sameSite: "none",
